@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671167689132",
+    "project_id": "voiceforher-728b6",
+    "storage_bucket": "voiceforher-728b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671167689132:android:59f3579216b5b45d91ca09",
+        "android_client_info": {
+          "package_name": "com.example.voiceforher"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr67v4tIAvzgZWBv1kZ4db9q7a_AzLzaE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
