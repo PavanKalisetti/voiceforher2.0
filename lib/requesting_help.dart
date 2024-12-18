@@ -2,8 +2,31 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+
+class CallPage extends StatelessWidget {
+  const CallPage({Key? key, required this.callID, required this.user_name, required this.user_id}) : super(key: key);
+  final String callID;
+  final String user_name;
+  final String user_id;
+
+  @override
+  Widget build(BuildContext context) {
+    return ZegoUIKitPrebuiltCall(
+      appID: 1020905435, // Fill in the appID that you get from ZEGOCLOUD Admin Console.
+      appSign: "fca7cde7e5b6bf19ee9ab4725be997b0e816f1cc23c8dd0279ea9badf96ca6b2", // Fill in the appSign that you get from ZEGOCLOUD Admin Console.
+      userID: user_id,
+      userName: user_name,
+      callID: callID,
+      // You can also use groupVideo/groupVoice/oneOnOneVoice to make more types of calls.
+      config: ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall(),
+    );
+  }
+}
+
 
 class EmergencyHelpScreen extends StatefulWidget {
   const EmergencyHelpScreen({super.key});
@@ -43,12 +66,16 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
   Future<void> _makeCall() async {
     const number = '7989372523'; // Replace with the actual emergency number
 
+
     // Get the connectivity status
     ConnectivityResult connectivity = (await Connectivity().checkConnectivity())[0];
 
     if (connectivity != ConnectivityResult.none) {
       // If internet is available, initiate WhatsApp video call
-      _makeWhatsAppCall();
+      final prefs = await SharedPreferences.getInstance();
+      final email = prefs.getString("email") ?? " ";
+      final user_id = prefs.getString("hashedEmail") ?? " ";
+      CallPage(callID: '123', user_name: email, user_id: user_id);
     } else {
       // If no internet, make a regular phone call
       bool? result = await FlutterPhoneDirectCaller.callNumber(number);
@@ -60,22 +87,6 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
 
 
   // Function to launch WhatsApp for a video call
-  Future<void> _makeWhatsAppCall() async {
-    const phoneNumber = '7989372523'; // Replace with the actual phone number
-    final uri = Uri.parse("https://wa.me/$phoneNumber?text=Hello");
-
-    try {
-
-      if (await canLaunchUrlString(uri.toString())) {
-        await launchUrl(uri);
-        // await launch(uri.toString());
-      } else {
-        debugPrint('WhatsApp is not installed or unable to launch.');
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
