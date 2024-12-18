@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voiceforher/login_page.dart';
 
 class ProfileScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -33,18 +34,43 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  Future<void> logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('email'); // Clear the stored email
+    print("User logged out");
+
+    await prefs.setBool('isLoggedIN', false);
+
+    // Navigate to the login screen
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (BuildContext context) => LoginScreen()),
+    ); // Replace '/login' with your login route
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile", style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Profile",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.deepPurpleAccent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+
+            onPressed: () {
+              _showLogoutConfirmation(context);
+            },
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: retriveData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else {
@@ -52,18 +78,18 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 20),
-                  Icon(Icons.person, size: 150,color: Colors.deepPurpleAccent,),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                  const Icon(Icons.person, size: 150, color: Colors.deepPurpleAccent),
+                  const SizedBox(height: 20),
                   Text(
                     name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.deepPurpleAccent,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     role,
                     style: TextStyle(
@@ -99,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: Colors.deepPurpleAccent, size: 28),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,6 +150,33 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to log out?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                logout(context); // Perform logout
+              },
+              child: const Text("Logout"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

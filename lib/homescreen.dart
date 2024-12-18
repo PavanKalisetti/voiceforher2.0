@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:voiceforher/AllUserProfiles.dart';
 import 'package:voiceforher/ChatBotScreen.dart';
 import 'package:voiceforher/addtocontacts.dart';
 import 'package:voiceforher/requesting_help.dart';
@@ -15,18 +16,24 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+
   int _currentIndex = 0;
+
+
 
   final String url =
       "https://www.google.com/maps/@16.7871972,80.8486436,15.38z?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D";
 
   final List<Widget> _pages = [
     HomePage(),
-    MapScreen(),
+    ProfilesPage(),
 
     ChatScreen(),
     ProfileScreen(),
   ];
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +80,8 @@ class _HomescreenState extends State<Homescreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
+            icon: Icon(Icons.notifications),
+            label: 'Notification',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
@@ -92,86 +99,126 @@ class _HomescreenState extends State<Homescreen> {
 }
 
 class HomePage extends StatelessWidget {
+
+  final List<Map<String, String>> videos = [
+    {
+      'title': 'Safety Tips for Women',
+      'thumbnail': 'https://www.goaid.in/wp-content/uploads/2024/05/Womens-Safety-in-India.png',
+    },
+    {
+      'title': 'Self-Defense Techniques',
+      'thumbnail': 'https://static.wixstatic.com/media/ff1c35_13ea0865e8854ff5ae11a8df5ed74724~mv2.jpg/v1/fill/w_568,h_318,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/ff1c35_13ea0865e8854ff5ae11a8df5ed74724~mv2.jpg',
+    },
+    {
+      'title': 'Recognizing Dangerous Situations',
+      'thumbnail': 'https://cdn.educba.com/academy/wp-content/uploads/2023/12/Safety-of-Women-in-India.jpg',
+    },
+    {
+      'title': 'Safety Tips for Women',
+      'thumbnail': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAsYjRK7fvrUT3636STrYYGj5aGn5P8FNDjg&s',
+    },
+    {
+      'title': 'Self-Defense Techniques',
+      'thumbnail': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTSLGPnytG-Y7GfTrYsaeR_onl3PewbCffeg&s',
+    },
+    {
+      'title': 'Recognizing Dangerous Situations',
+      'thumbnail': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-1pGyLusrPyi-NgYxsdioIrpLTlUCsYuTQg&s',
+    },
+  ];
+
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: Center(
-        child: Container(
-          color: Colors.deepPurple.shade50,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_)=> EmergencyHelpScreen()),
-                        );
-                      },
-                      child: Icon(
-                        Icons.warning_rounded,
-                        size: 80,
-                        color: Colors.white,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                        backgroundColor: Colors.red,
-                        padding: EdgeInsets.all(30),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Emergency Needed?',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Not Sure What to do?',
-                      style: TextStyle(fontSize: 18, color: Colors.deepPurpleAccent),
-                    ),
-                  ],
+      body: Padding(
+        padding: const EdgeInsets.only(top: 50),
+        child: Center(
+          child: Container(
+            color: Colors.deepPurple.shade50,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Horizontal Scroll Section
+                // Enhanced Slider
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: VideoSlider(videos: videos),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildCircularButton(context, Icons.location_on, 'Safe Zone', MapScreen()),
-                          _buildCircularButton(context, Icons.group, 'She Mate', MapScreen()),
-                          _buildCircularButton(context, Icons.map, 'Safe Pathways', MapScreen()),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildCircularButton(context, Icons.location_on,
-                              'Awareness', AwarenessPage()),
-                          _buildCircularButton(context, Icons.group,
-                              'Counselling', CounsellingHomePage()),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
 
-                        ],
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_)=> EmergencyHelpScreen()),
+                          );
+                        },
+                        child: Icon(
+                          Icons.warning_rounded,
+                          size: 80,
+                          color: Colors.white,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          backgroundColor: Colors.red,
+                          padding: EdgeInsets.all(30),
+                        ),
                       ),
-                    ),
-
-                    SizedBox(height: 16),
-                    _buildRectangularButton(context, Icons.report, 'Complaint Box', ComplaintsScreen()),
-                    _buildRectangularButton(context, Icons.contacts, 'Emergency Contacts', EmergencyContactsPage()),
-                  ],
+                      SizedBox(height: 16),
+                      Text(
+                        'Emergency Needed?',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Not Sure What to do?',
+                        style: TextStyle(fontSize: 18, color: Colors.deepPurpleAccent),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Padding(
+                      //   padding: const EdgeInsets.all(16.0),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //     children: [
+                      //       _buildCircularButton(context, Icons.location_on, 'Safe Zone', MapScreen()),
+                      //       _buildCircularButton(context, Icons.group, 'She Mate', MapScreen()),
+                      //       _buildCircularButton(context, Icons.map, 'Safe Pathways', MapScreen()),
+                      //     ],
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildCircularButton(context, Icons.location_on,
+                                'Awareness', AwarenessPage()),
+                            _buildCircularButton(context, Icons.group,
+                                'Counselling', CounsellingHomePage()),
+
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 16),
+                      _buildRectangularButton(context, Icons.report, 'Complaint Box', ComplaintsScreen()),
+                      _buildRectangularButton(context, Icons.contacts, 'Emergency Contacts', EmergencyContactsPage()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -242,48 +289,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// class MapScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Text(
-//         'Map Screen',
-//         style: TextStyle(fontSize: 24, color: Colors.deepPurpleAccent),
-//       ),
-//     );
-//   }
-// }
 
-// Placeholder pages for each grid item navigation
-class SafeZonePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Safe Zone', style: TextStyle(color: Colors.white)), backgroundColor: Colors.deepPurpleAccent),
-      body: Center(child: Text('Safe Zone Page', style: TextStyle(color: Colors.deepPurpleAccent))),
-    );
-  }
-}
-
-class SheMatePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('She Mate', style: TextStyle(color: Colors.white)), backgroundColor: Colors.deepPurpleAccent),
-      body: Center(child: Text('She Mate Page', style: TextStyle(color: Colors.deepPurpleAccent))),
-    );
-  }
-}
-
-class SafePathwaysPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Safe Pathways', style: TextStyle(color: Colors.white)), backgroundColor: Colors.deepPurpleAccent),
-      body: Center(child: Text('Safe Pathways Page', style: TextStyle(color: Colors.deepPurpleAccent))),
-    );
-  }
-}
 
 class AddContactsPage extends StatelessWidget {
   @override
@@ -296,29 +302,111 @@ class AddContactsPage extends StatelessWidget {
 }
 
 
-// Placeholder screens
-class MapScreen extends StatelessWidget {
-  final String googleMapsUrl = "https://www.google.com/maps/@16.7871972,80.8486436,15.38z?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D"; // San Francisco coordinates
+// VideoSlider Component
+class VideoSlider extends StatefulWidget {
+  final List<Map<String, String>> videos;
+
+  VideoSlider({required this.videos});
+
+  @override
+  _VideoSliderState createState() => _VideoSliderState();
+}
+class _VideoSliderState extends State<VideoSlider> {
+  int _currentPage = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.85);
+
+    // Auto-slide every 3 seconds
+    Future.delayed(Duration(seconds: 3), _autoSlide);
+  }
+
+  void _autoSlide() {
+    if (_currentPage < widget.videos.length - 1) {
+      _currentPage++;
+    } else {
+      _currentPage = 0;  // Loop back to the first item
+    }
+    _pageController.animateToPage(
+      _currentPage,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
+    Future.delayed(Duration(seconds: 3), _autoSlide);  // Repeat after delay
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _redirectToGoogleMaps();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Redirecting to Google Maps..."),
-      ),
-      body: Center(
-        child: CircularProgressIndicator(), // Show a loading indicator while redirecting
+    return SizedBox(
+      height: 180, // Adjust height for the slider
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        itemCount: widget.videos.length,
+        itemBuilder: (context, index) {
+          final video = widget.videos[index];
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: _currentPage == index ? 0 : 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(2, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    video['thumbnail']!,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    right: 10,
+                    child: Container(
+                      color: Colors.black.withOpacity(0.6),
+                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      child: Text(
+                        video['title']!,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
-  }
-
-  void _redirectToGoogleMaps() async {
-    if (await canLaunch(googleMapsUrl)) {
-      await launch(googleMapsUrl);
-    } else {
-      print("Could not launch Google Maps.");
-    }
   }
 }
