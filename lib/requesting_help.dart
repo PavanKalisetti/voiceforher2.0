@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-
-// void main() {
-//   runApp(MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     theme: ThemeData.light(),
-//     home: EmergencyHelpScreen(),
-//   ));
-// }
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class EmergencyHelpScreen extends StatefulWidget {
   const EmergencyHelpScreen({super.key});
@@ -34,7 +29,7 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
           timerExpired = true;
         });
         timer.cancel();
-        _callNumber(); // Make the call when timer expires
+        _makeCall(); // Make the call when timer expires
       } else {
         setState(() {
           countdown--;
@@ -43,11 +38,42 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
     });
   }
 
-  Future<void> _callNumber() async {
+  // Function to check internet connection and make call
+  // Function to check internet connection and make a call
+  Future<void> _makeCall() async {
     const number = '7989372523'; // Replace with the actual emergency number
-    bool? result = await FlutterPhoneDirectCaller.callNumber(number);
-    if (!result!) {
-      debugPrint('Call could not be initiated.');
+
+    // Get the connectivity status
+    ConnectivityResult connectivity = (await Connectivity().checkConnectivity())[0];
+
+    if (connectivity != ConnectivityResult.none) {
+      // If internet is available, initiate WhatsApp video call
+      _makeWhatsAppCall();
+    } else {
+      // If no internet, make a regular phone call
+      bool? result = await FlutterPhoneDirectCaller.callNumber(number);
+      if (!result!) {
+        debugPrint('Call could not be initiated.');
+      }
+    }
+  }
+
+
+  // Function to launch WhatsApp for a video call
+  Future<void> _makeWhatsAppCall() async {
+    const phoneNumber = '7989372523'; // Replace with the actual phone number
+    final uri = Uri.parse("https://wa.me/$phoneNumber?text=Hello");
+
+    try {
+
+      if (await canLaunchUrlString(uri.toString())) {
+        await launchUrl(uri);
+        // await launch(uri.toString());
+      } else {
+        debugPrint('WhatsApp is not installed or unable to launch.');
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
     }
   }
 
