@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'SendSmsMessage.dart';
+
 
 // void main() {
 //   runApp(MaterialApp(
@@ -35,6 +39,9 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
         });
         timer.cancel();
         _callNumber(); // Make the call when timer expires
+        SendSmsMessage s = new SendSmsMessage();
+        s.sendSMS();
+
       } else {
         setState(() {
           countdown--;
@@ -44,12 +51,17 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
   }
 
   Future<void> _callNumber() async {
-    const number = '7989372523'; // Replace with the actual emergency number
+    const number = '8639829687'; // Replace with the actual emergency number
     bool? result = await FlutterPhoneDirectCaller.callNumber(number);
     if (!result!) {
       debugPrint('Call could not be initiated.');
     }
   }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

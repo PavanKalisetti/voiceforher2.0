@@ -45,6 +45,8 @@ dependencies:
   intl:
   google_generative_ai:
   url_launcher:
+  permission_handler: ^11.3.1
+  flutter_background_messenger: ^0.0.1
 
 dev_dependencies:
   flutter_test:
