@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:voiceforher/services/FireStoreProfileServices.dart';
-// import 'package:voiceforher/services/firestore_profile_service.dart'; // Replace with the actual file path
-
-
 
 class ProfilesPage extends StatelessWidget {
   final FirestoreProfileService profileService = FirestoreProfileService();
@@ -16,6 +13,7 @@ class ProfilesPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('User Profiles'),
         centerTitle: true,
+        backgroundColor: Colors.deepPurpleAccent,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: profileService.getProfileStream(),
@@ -42,30 +40,29 @@ class ProfilesPage extends StatelessWidget {
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                elevation: 3,
+                elevation: 5,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
+                  onTap: () => _showProfileDetails(context, profileData),
                   leading: CircleAvatar(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.deepPurpleAccent,
                     child: Text(
                       profileData['name'][0].toUpperCase(),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                  title: Text(profileData['name'] ?? 'Unknown'),
+                  title: Text(
+                    profileData['name'] ?? 'Unknown',
+                    style: const TextStyle(fontSize: 18),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Email: ${profileData['email'] ?? 'Not provided'}'),
-                      Text('Mobile: ${profileData['mobile'] ?? 'Not provided'}'),
-                      Text('Education: ${profileData['education'] ?? 'Not specified'}'),
+                      Text('Email: ${profileData['email'] ?? 'Not provided'}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                      Text('Mobile: ${profileData['mobile'] ?? 'Not provided'}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 14)),
                     ],
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () {
-                      // TODO: Navigate to an Edit Profile page
-                      _editProfile(context, profile.id, profileData);
-                    },
                   ),
                 ),
               );
@@ -76,33 +73,60 @@ class ProfilesPage extends StatelessWidget {
     );
   }
 
-  void _editProfile(BuildContext context, String docID, Map<String, dynamic> profileData) {
-    // Navigate to an edit profile page or show a dialog for editing
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(
-          docID: docID,
-          profileData: profileData,
-        ),
-      ),
+  void _showProfileDetails(BuildContext context, Map<String, dynamic> profileData) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          title: Text(
+            profileData['name'] ?? 'User Details',
+
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('Name', profileData['name'] ?? 'Not provided'),
+                _buildDetailRow('Email', profileData['email'] ?? 'Not provided'),
+                _buildDetailRow('Hashed Email', profileData['hashedEmail'] ?? 'Not provided'),
+                _buildDetailRow('Education', profileData['education'] ?? 'Not provided'),
+                _buildDetailRow('Mobile', profileData['mobile'] ?? 'Not provided'),
+                _buildDetailRow('Role', profileData['role'] ?? 'Not specified'),
+                _buildDetailRow('Is Authority', profileData['isAuthority']?.toString() ?? 'No'),
+                _buildDetailRow('Address', profileData['address'] ?? 'Not provided'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close', style: TextStyle(color: Colors.teal)),
+            ),
+          ],
+        );
+      },
     );
   }
-}
 
-class EditProfilePage extends StatelessWidget {
-  final String docID;
-  final Map<String, dynamic> profileData;
-
-  const EditProfilePage({Key? key, required this.docID, required this.profileData}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // Implement your edit form here
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
-      body: const Center(
-        child: Text('Edit Profile Page'),
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 16),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
