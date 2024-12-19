@@ -2,9 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
-  final String userId; // ID of the girl user
-  final String officerId; // ID of the officer
-  const ChatPage({required this.userId, required this.officerId, Key? key}) : super(key: key);
+  final String userId; // Unique user ID
+  final String authorityId;
+
+  final dynamic hashedemail; // Unique authority ID
+
+  const ChatPage({
+    required this.userId,
+    required this.authorityId,
+    required this.hashedemail,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -13,27 +21,47 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late String _chatDocumentId;
 
-  void _sendMessage() {
+  @override
+  void initState() {
+    super.initState();
+    // _chatDocumentId = '${widget.userId}_${widget.authorityId}'; // Create unique document ID
+    _chatDocumentId = '${widget.hashedemail}';
+  }
+
+  Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) return;
 
-    // Sending a message to Firestore
-    _firestore.collection('chats').add({
-      'userId': widget.userId,
-      'officerId': widget.officerId,
-      'senderId': widget.userId, // Replace with officerId if the sender is the officer
+    final message = {
+      'senderId': widget.userId, // Replace with authorityId if the sender is authority
       'message': _messageController.text.trim(),
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      'timestamp': DateTime.now().toIso8601String(), // Use DateTime for timestamp
+    };
 
-    _messageController.clear();
+    final chatRef = _firestore.collection('chats').doc(_chatDocumentId);
+
+    try {
+      // Append the new message to the messages array
+      await chatRef.set(
+        {
+          'messages': FieldValue.arrayUnion([message]), // Use DateTime value
+        },
+        SetOptions(merge: true), // Merge with existing data
+      );
+
+      _messageController.clear(); // Clear the input field
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat with Officer'),
+        title: const Text('Chat with Authority'),
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
@@ -41,33 +69,20 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           // Chat Messages Section
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _firestore
-                  .collection('chats')
-                  .orderBy('timestamp', descending: false) // Ensure you have an index for this query
-                  .snapshots(),
+            child: StreamBuilder<DocumentSnapshot>(
+              stream: _firestore.collection('chats').doc(_chatDocumentId).snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.hasError) {
+                if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
                   return const Center(
-                    child: Text('Error loading messages.'),
+                    child: Text('No messages yet. Start the conversation!'),
                   );
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No messages yet. Start the conversation!',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  );
-                }
-
-                final messages = snapshot.data!.docs;
-                print("Fetched messages: ${messages.map((m) => m['message']).toList()}");
+                final messages = snapshot.data!['messages'] as List<dynamic>? ?? [];
 
                 return ListView.builder(
                   itemCount: messages.length,
@@ -95,9 +110,7 @@ class _ChatPageState extends State<ChatPage> {
                   },
                 );
               },
-            )
-
-
+            ),
           ),
 
           // Message Input Section

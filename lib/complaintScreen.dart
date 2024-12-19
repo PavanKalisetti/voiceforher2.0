@@ -377,6 +377,7 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
                   complaintDate,
                   complaintlocation,
                   wasAnonymous,
+                  _hashedEmail,
 
 
                 ),
@@ -396,6 +397,7 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
       String issueOccurredOn,
       String issueOccurredAt,
       String wasAnonymous,
+      String hashedEmail,
       ) {
     showDialog(
       context: context,
@@ -471,20 +473,22 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
                 //   const SnackBar(content: Text('Chat with Officer clicked!')),
                 // );
                 getHashedDetails();
-                String userid = "girl_user_id";
-                String officerid = "officer_id";
+                String userid = hashedEmail;
+                String officerid = "_officerId_";
 
                 print("isAuthorized value $isAuthorized" );
 
                 print("isAuthorized value $isAuthorized_fireStore" );
                 if(isAuthorized_fireStore){
-                  userid = "officer_id";
+                  userid = "_officerId_";
+                  officerid = hashedEmail;
                 }else{
-                  officerid = "girl_user_id";
+                  userid = hashedEmail;
+                  officerid = "_officerId_";
                 }
 
 
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(userId: userid, officerId: officerid)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(userId: userid, authorityId: officerid, hashedemail: hashedEmail,)));
 
               },
               icon: const Icon(Icons.chat, color: Colors.blue),

@@ -57,7 +57,7 @@ class ProfilesPage extends StatelessWidget {
                     children: [
                       Text('Email: ${profileData['email'] ?? 'Not provided'}'),
                       Text('Mobile: ${profileData['mobile'] ?? 'Not provided'}'),
-                      Text('Role: ${profileData['role'] ?? 'Not specified'}'),
+                      Text('Education: ${profileData['education'] ?? 'Not specified'}'),
                     ],
                   ),
                   trailing: IconButton(
