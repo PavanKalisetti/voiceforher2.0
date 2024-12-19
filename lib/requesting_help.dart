@@ -40,7 +40,7 @@ class _EmergencyHelpScreenState extends State<EmergencyHelpScreen> {
         timer.cancel();
         _callNumber(); // Make the call when timer expires
         SendSmsMessage s = new SendSmsMessage();
-        s.sendSMS();
+        s.sendSMSWithLocation();
 
       } else {
         setState(() {
